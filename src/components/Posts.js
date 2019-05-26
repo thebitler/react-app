@@ -1,27 +1,37 @@
 import React from 'react';
-import Post from './Post';
+import User from './User';
+import InstaService from '../service/instaservice';
+import ErrorMessage from './ErrorMessage';
 
 export default class Header extends React.Component {
+	InstaService = new InstaService();
+	state = {
+		posts: [],
+		error: false
+	};
+
+	componentDidMount() {
+		this.InstaService.getAllPosts()
+			.then(posts => this.setState({ posts }))
+			.catch(err => this.setState({ error: true }));
+	}
+
 	render() {
+		const { error, posts } = this.state;
+		if (error) return <ErrorMessage />;
 		return (
 			<div className="left">
-				<Post
-					usersrc="https://www.meme-arsenal.com/memes/d08de878aaede7b9de8dfa53106519e3.jpg"
-					username="Виктор Россия"
-					name="Красивая лужа"
-					desc="Значимость этих проблем настолько очевидна, что консультация с широким активом требует от нас
-					анализа системы обучения кадров, соответствующей насущным потребностям."
-					src="https://womanadvice.ru/sites/default/files/49/articles_main_big/2017-11-10_0900/priroda_kolumbii.jpg"
-					alt="nature"
-				/>
-				<Post
-					usersrc="https://steamuserimages-a.akamaihd.net/ugc/955223864095212196/5E51E3F97ACB5D0419C65329BA942434BF81DA6E/"
-					username="Ольга Вадим"
-					name="Большая яма в Америке"
-					desc="Не вызывает сомнений, что рамки и место обучения кадров играет важную роль в формировании систему массового участия."
-					src="https://www.outsideonline.com/sites/default/files/styles/full-page/public/2018/11/20/outside-guide-grand-canyon_h.jpg?itok=uTbZlKSn"
-					alt="nature"
-				/>
+				{posts.map(e => {
+					const { name, altname, photo, src, alt, descr, id } = e;
+					return (
+						<div key={id} className="post">
+							<User src={photo} name={altname} />
+							<img src={src} alt={alt} />
+							<div className="post__name">{name}</div>
+							<div className="post__descr">{descr}</div>
+						</div>
+					);
+				})}
 			</div>
 		);
 	}

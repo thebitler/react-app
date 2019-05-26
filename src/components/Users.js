@@ -1,63 +1,39 @@
 import React from 'react';
 import User from './User';
-// let users = [
-// 	{
-// 		src: 'https://www.meme-arsenal.com/memes/d08de878aaede7b9de8dfa53106519e3.jpg',
-// 		name: 'Виктор Россия'
-// 	},
-// 	{
-// 		src: 'https://steamuserimages-a.akamaihd.net/ugc/955223864095212196/5E51E3F97ACB5D0419C65329BA942434BF81DA6E/',
-// 		name: 'Ольга Вадим'
-// 	},
-// 	{
-// 		src: 'https://www.meme-arsenal.com/memes/d08de878aaede7b9de8dfa53106519e3.jpg',
-// 		name: 'Виктор Россия'
-// 	},
-// 	{
-// 		src: 'https://steamuserimages-a.akamaihd.net/ugc/955223864095212196/5E51E3F97ACB5D0419C65329BA942434BF81DA6E/',
-// 		name: 'Ольга Вадим'
-// 	},
-// 	{
-// 		src: 'https://www.meme-arsenal.com/memes/d08de878aaede7b9de8dfa53106519e3.jpg',
-// 		name: 'Виктор Россия'
-// 	}
-// ];
-
-// function RenederUser(name, src) {
-// 	return <User src={name} name={src} big="false"/>;
-// }
+import InstaService from '../service/instaservice';
+import ErrorMessage from './ErrorMessage';
 
 export default class Header extends React.Component {
+	InstaService = new InstaService();
+	state = {
+		posts: [],
+		error: false
+	};
+
+	componentDidMount() {
+		this.InstaService.getAllPosts()
+			.then(posts => this.setState({ posts }))
+			.catch(err => this.setState({ error: true }));
+	}
+
+	renderItems(arr) {
+		return arr.map(e => {
+			const { photo, altname, id } = e;
+			return (
+				<div key={id}>
+					<User src={photo} name={altname} />
+				</div>
+			);
+		});
+	}
+
 	render() {
+		const { error, posts } = this.state;
+		if (error) return <ErrorMessage />;
 		return (
 			<div className="right">
-				<User
-					src="https://www.meme-arsenal.com/memes/d08de878aaede7b9de8dfa53106519e3.jpg"
-					name="Виктор Россия"
-					big
-				/>
-				<div className="users__block">
-					<User
-						src="https://www.meme-arsenal.com/memes/d08de878aaede7b9de8dfa53106519e3.jpg"
-						name="Виктор Россия"
-					/>
-					<User
-						src="https://www.meme-arsenal.com/memes/d08de878aaede7b9de8dfa53106519e3.jpg"
-						name="Виктор Россия"
-					/>
-					<User
-						src="https://www.meme-arsenal.com/memes/d08de878aaede7b9de8dfa53106519e3.jpg"
-						name="Виктор Россия"
-					/>
-					<User
-						src="https://www.meme-arsenal.com/memes/d08de878aaede7b9de8dfa53106519e3.jpg"
-						name="Виктор Россия"
-					/>
-					<User
-						src="https://www.meme-arsenal.com/memes/d08de878aaede7b9de8dfa53106519e3.jpg"
-						name="Виктор Россия"
-					/>
-				</div>
+				{this.renderItems(posts.reverse().slice(-1))}
+				<div className="users__block">{this.renderItems(posts.reverse().slice(1))}</div>
 			</div>
 		);
 	}
