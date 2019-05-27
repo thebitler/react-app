@@ -1,22 +1,34 @@
 import React from 'react';
 import logo from './../assets/logo.svg';
+import { Link } from 'react-router-dom';
 
-export default class Header extends React.Component {
+class LinkElem extends React.Component {
+	render() {
+		const { lto, name } = this.props;
+		return (
+			<li>
+				<Link to={lto} className="menu__links">
+					{name}
+				</Link>
+			</li>
+		);
+	}
+}
+
+export default class extends React.Component {
 	render() {
 		return (
 			<header>
 				<div className="container h-flex">
-					<a href="#" className="logo">
+					<Link to="/" className="logo">
 						<img alt="logo" src={logo} />
-					</a>
+					</Link>
 					<nav className="links">
 						<ul>
-							<li>
-								<a className="menu__links">Лента</a>
-							</li>
-							<li>
-								<a className="menu__links">Профиль</a>
-							</li>
+							<LinkElem lto="/" name="Лента" />
+							<LinkElem lto="/profile" name="Профиль" />
+							<LinkElem lto="/spinner" name="Спинер" />
+							{/* <LinkElem lto="/users" name="Пользователи" /> */}
 						</ul>
 					</nav>
 				</div>

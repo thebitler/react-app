@@ -3,28 +3,17 @@ import User from './User';
 import InstaService from '../service/instaservice';
 import ErrorMessage from './ErrorMessage';
 
-export default class Header extends React.Component {
-	InstaService = new InstaService();
+export default class extends React.Component {
 	state = {
 		posts: [],
 		error: false
 	};
 
 	componentDidMount() {
-		this.InstaService.getAllPosts()
+		new InstaService()
+			.getAllUsers()
 			.then(posts => this.setState({ posts }))
 			.catch(err => this.setState({ error: true }));
-	}
-
-	renderItems(arr) {
-		return arr.map(e => {
-			const { photo, altname, id } = e;
-			return (
-				<div key={id}>
-					<User src={photo} name={altname} />
-				</div>
-			);
-		});
 	}
 
 	render() {
@@ -32,8 +21,14 @@ export default class Header extends React.Component {
 		if (error) return <ErrorMessage />;
 		return (
 			<div className="right">
-				{this.renderItems(posts.reverse().slice(-1))}
-				<div className="users__block">{this.renderItems(posts.reverse().slice(1))}</div>
+				{[posts[0] || []].map(({ photo, altname, id }) => (
+					<User key={id} src={photo} name={altname} big />
+				))}
+				<div className="users__block">
+					{posts.slice(1).map(({ photo, altname, id }) => (
+						<User key={id} src={photo} name={altname} />
+					))}
+				</div>
 			</div>
 		);
 	}
